@@ -1,11 +1,15 @@
 package songpider.nadree.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import songpider.nadree.model.TodoEntity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -18,6 +22,9 @@ import java.util.Date;
 public class TodoDTO {
     private String todoId;
     private String title;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
     private boolean done;
 
@@ -34,6 +41,7 @@ public class TodoDTO {
                 .todoId(dto.getTodoId())
                 .title(dto.getTitle())
                 .done(dto.isDone())
+                .date(dto.getDate())
                 .build();
     }
 

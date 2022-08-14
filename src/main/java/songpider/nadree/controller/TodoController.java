@@ -1,6 +1,7 @@
 package songpider.nadree.controller;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -11,11 +12,13 @@ import songpider.nadree.model.TodoEntity;
 import songpider.nadree.service.TodoService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Date;
 
+@Slf4j //추가
 @RestController
 @RequestMapping("/todo")
 public class TodoController {
@@ -49,8 +52,6 @@ public class TodoController {
 
             //임시 사용자 아이디 설정
             entity.setId(temporaryId);
-            entity.setDate(temporaryDate);
-
 
             //service를 이용해 TodoEntity 생성
             List<TodoEntity> entities = service.create(entity);
@@ -72,12 +73,12 @@ public class TodoController {
     }
 
     //todo 검색
-    @GetMapping
-    public ResponseEntity<?> retrieveTodoList() {
+    @GetMapping()
+    public ResponseEntity<?> retrieveTodoList(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate day) {
         String temporaryId = "temporary-user";
-
+        log.info("required date : {}",day);
         //service의 retrieve()함수를 사용해 todo리스트 가져오기
-        List<TodoEntity> entities = service.retrieve(temporaryId, temporaryDate);
+        List<TodoEntity> entities = service.retrieve(temporaryId, day);
         //java stream을 이용해 리턴된 entity 리스트를 todoDTO 리스트로 변환
         List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
         ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
