@@ -32,7 +32,7 @@ public class BookmarkService {
         validate(bookmarkEntity);
         bookmarkRepository.save(bookmarkEntity);
 
-        return bookmarkRepository.findByUserId(bookmarkEntity.getUserId());
+        return bookmarkRepository.findByUserId((bookmarkEntity.getUserId()));
     }
 
     public List<BookmarkEntity> retrieve(String userId) {
@@ -41,7 +41,7 @@ public class BookmarkService {
 
     public List<BookmarkEntity> update(BookmarkEntity bookmarkEntity) {
         validate(bookmarkEntity);
-        final Optional<BookmarkEntity> original = bookmarkRepository.findById(bookmarkEntity.getPlaceId());
+        final Optional<BookmarkEntity> original = bookmarkRepository.findByPlaceId(bookmarkEntity.getPlaceId());
 
         if (original.isPresent()) {
             final BookmarkEntity bookmark = original.get();
@@ -56,7 +56,7 @@ public class BookmarkService {
         try {
             bookmarkRepository.delete(bookmarkEntity);
         } catch (Exception e) {
-            log.error("error deleting Bookmark Entity ", bookmarkEntity.getPlaceId(),e);
+            log.error("error deleting Bookmark Entity ", bookmarkEntity.getPlaceId(), e);
             throw new RuntimeException("error deleting Bookmark Entity "+bookmarkEntity.getPlaceId());
         }
         return retrieve(bookmarkEntity.getUserId());

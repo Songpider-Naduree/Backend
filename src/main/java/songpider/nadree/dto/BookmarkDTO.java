@@ -14,19 +14,13 @@ import songpider.nadree.model.BookmarkEntity;
 public class BookmarkDTO {
     private String placeId;
     private String placeName;
-    private Float x;
-    private Float y;
-    private String rAddress;
-    private String Address;
+    private String address_name;
     private String memo;
 
     public BookmarkDTO(final BookmarkEntity bookmarkEntity) {
         this.placeId = bookmarkEntity.getPlaceId();
         this.placeName = bookmarkEntity.getPlaceName();
-        this.x = bookmarkEntity.getY();
-        this.y = bookmarkEntity.getY();
-        this.rAddress = bookmarkEntity.getRAddress();
-        this.Address = bookmarkEntity.getAddress();
+        this.address_name = bookmarkEntity.getAddress_name();
         this.memo = bookmarkEntity.getMemo();
     }
 
@@ -34,10 +28,7 @@ public class BookmarkDTO {
         return BookmarkEntity.builder()
                 .placeId(bookmarkDTO.getPlaceId())
                 .placeName(bookmarkDTO.getPlaceName())
-                .x(bookmarkDTO.getX())
-                .y(bookmarkDTO.getY())
-                .rAddress(bookmarkDTO.getRAddress())
-                .Address(bookmarkDTO.getAddress())
+                .address_name(bookmarkDTO.getAddress_name())
                 .memo(bookmarkDTO.getMemo())
                 .build();
     }
