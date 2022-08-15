@@ -19,12 +19,9 @@ public class BookmarkEntity {
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name="system-uuid",strategy = "uuid")
     private String placeId;
-    private String userId; // User 로그인 id
+    private String userId; // User 고유일련번호
     private String placeName;
-    private Float x;
-    private Float y;
-    private String rAddress; //도로명주소
-    private String Address; //지번주소
+    private String address_name; //주소
     private String memo;
 
 }
