@@ -2,6 +2,7 @@ package songpider.nadree.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import songpider.nadree.dto.BookmarkDTO;
 import songpider.nadree.dto.ResponseDTO;
@@ -18,12 +19,11 @@ public class BookmarkController {
     private BookmarkService bookmarkService;
 
     @PostMapping
-    public ResponseEntity<?> createBookmark(@RequestBody BookmarkDTO dto) {
+    public ResponseEntity<?> createBookmark(@AuthenticationPrincipal String userId, @RequestBody BookmarkDTO dto) {
         try {
-            String temporaryUserId = "temporary-user";
             BookmarkEntity entity = BookmarkDTO.toEntity(dto);
             entity.setPlaceId(null);
-            entity.setUserId(temporaryUserId);
+            entity.setUserId(userId);
             List<BookmarkEntity> entities = bookmarkService.create(entity);
 
             List<BookmarkDTO> dtos = entities.stream().map(BookmarkDTO::new).collect(Collectors.toList());
@@ -37,19 +37,17 @@ public class BookmarkController {
     }
 
     @GetMapping
-    public ResponseEntity<?> retrieveBookmark(@RequestBody BookmarkDTO dto) {
-        String temporaryUserId = "temporary-user";
-        List<BookmarkEntity> entities = bookmarkService.retrieve(temporaryUserId);
+    public ResponseEntity<?> retrieveBookmark(@AuthenticationPrincipal String userId, @RequestBody BookmarkDTO dto) {
+        List<BookmarkEntity> entities = bookmarkService.retrieve(userId);
         List<BookmarkDTO> dtos = entities.stream().map(BookmarkDTO::new).collect(Collectors.toList());
         ResponseDTO<BookmarkDTO> response = ResponseDTO.<BookmarkDTO>builder().data(dtos).build();
         return ResponseEntity.ok().body(response);
     }
 
     @PutMapping
-    public ResponseEntity<?> updateBookmark(@RequestBody BookmarkDTO dto) {
-        String temporaryUserId = "temporary-user";
+    public ResponseEntity<?> updateBookmark(@AuthenticationPrincipal String userId, @RequestBody BookmarkDTO dto) {
         BookmarkEntity entity = BookmarkDTO.toEntity(dto);
-        entity.setUserId(temporaryUserId);
+        entity.setUserId(userId);
         List<BookmarkEntity> entities = bookmarkService.update(entity);
         List<BookmarkDTO> dtos = entities.stream().map(BookmarkDTO::new).collect(Collectors.toList());
         ResponseDTO<BookmarkDTO> response = ResponseDTO.<BookmarkDTO>builder().data(dtos).build();
@@ -57,11 +55,10 @@ public class BookmarkController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteBookmark(@RequestBody BookmarkDTO dto) {
+    public ResponseEntity<?> deleteBookmark(@AuthenticationPrincipal String userId, @RequestBody BookmarkDTO dto) {
         try {
-            String temporaryUserId = "temporary-user";
             BookmarkEntity entity = BookmarkDTO.toEntity(dto);
-            entity.setUserId(temporaryUserId);
+            entity.setUserId(userId);
             List<BookmarkEntity> entities = bookmarkService.delete(entity);
             List<BookmarkDTO> dtos = entities.stream().map(BookmarkDTO::new).collect(Collectors.toList());
             ResponseDTO<BookmarkDTO> response = ResponseDTO.<BookmarkDTO>builder().data(dtos).build();

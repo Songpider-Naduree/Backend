@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import songpider.nadree.dto.ResponseDTO;
 import songpider.nadree.dto.TodoDTO;
@@ -41,9 +42,8 @@ public class TodoController {
     }*/
 
     @PostMapping("/new")
-    public ResponseEntity<?> createTodo(@RequestBody TodoDTO dto) {
+    public ResponseEntity<?> createTodo(@AuthenticationPrincipal String userId, @RequestBody TodoDTO dto) {
         try {
-            String temporaryId = "temporary-user";
             //사용자로부터 받은 TodoDTO를 TodoEntity로 변환
             TodoEntity entity = TodoDTO.toEntity(dto);
 
@@ -51,7 +51,7 @@ public class TodoController {
             entity.setTodoId(null);
 
             //임시 사용자 아이디 설정
-            entity.setId(temporaryId);
+            entity.setId(userId);
 
             //service를 이용해 TodoEntity 생성
             List<TodoEntity> entities = service.create(entity);
@@ -74,11 +74,10 @@ public class TodoController {
 
     //todo 검색
     @GetMapping()
-    public ResponseEntity<?> retrieveTodoList(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate day) {
-        String temporaryId = "temporary-user";
+    public ResponseEntity<?> retrieveTodoList(@AuthenticationPrincipal String userId, @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate day) {
         log.info("required date : {}",day);
         //service의 retrieve()함수를 사용해 todo리스트 가져오기
-        List<TodoEntity> entities = service.retrieve(temporaryId, day);
+        List<TodoEntity> entities = service.retrieve(userId, day);
         //java stream을 이용해 리턴된 entity 리스트를 todoDTO 리스트로 변환
         List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
         ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
@@ -86,10 +85,9 @@ public class TodoController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateTodo(@RequestBody TodoDTO dto) {
-        String temporaryId = "temporary-user";
+    public ResponseEntity<?> updateTodo(@AuthenticationPrincipal String userId, @RequestBody TodoDTO dto) {
         TodoEntity entity = TodoDTO.toEntity(dto);
-        entity.setId(temporaryId);
+        entity.setId(userId);
         List<TodoEntity> entities = service.update(entity);
         List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
         ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
@@ -97,10 +95,9 @@ public class TodoController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteTodo(@RequestBody TodoDTO dto) {
-        String temporaryId = "temporary-user";
+    public ResponseEntity<?> deleteTodo(@AuthenticationPrincipal String userId, @RequestBody TodoDTO dto) {
         TodoEntity entity = TodoDTO.toEntity(dto);
-        entity.setId(temporaryId);
+        entity.setId(userId);
         List<TodoEntity> entities = service.delete(entity);
         List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
         ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
